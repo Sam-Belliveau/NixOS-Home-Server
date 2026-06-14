@@ -1,0 +1,10 @@
+# Build artifacts
+result
+result-*
+
+# Secrets — only the sops-ENCRYPTED secrets/secrets.yaml is committed.
+# Never commit raw keys or decrypted material.
+*.dec
+*.key
+/secrets/*
+!/secrets/secrets.yaml
