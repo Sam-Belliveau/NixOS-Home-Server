@@ -1,0 +1,19 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  flake-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: nix flake check (evaluate, no build)
+        run: nix flake check --no-build
+        env:
+          NIXPKGS_ALLOW_UNFREE: "1"

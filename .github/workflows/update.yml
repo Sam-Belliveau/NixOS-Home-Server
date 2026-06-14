@@ -1,0 +1,29 @@
+name: update
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-nixpkgs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: bump nixpkgs
+        run: nix flake update nixpkgs
+      - name: evaluate before committing
+        run: nix flake check --no-build
+        env:
+          NIXPKGS_ALLOW_UNFREE: "1"
+      - name: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flake.lock
+          git diff --cached --quiet || git commit -m "flake.lock: bump nixpkgs"
+          git push
