@@ -2,10 +2,10 @@
 {
   programs.git = {
     enable = true;
-    userName = "Sam Belliveau";
-    userEmail = "sam.belliveau@gmail.com";
     lfs.enable = true;
-    extraConfig = {
+    settings = {
+      user.name = "Sam Belliveau";
+      user.email = "sam.belliveau@gmail.com";
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;

@@ -10,8 +10,7 @@ let
   ];
 in
 {
-  options.samb.scratch.enable =
-    lib.mkEnableOption "the optional 2TB NVMe scratch disk (adopt only after proven stable)";
+  options.samb.scratch.enable = lib.mkEnableOption "the optional 2TB NVMe scratch disk (adopt only after proven stable)";
 
   config = lib.mkIf cfg.enable {
     disko.devices.disk.scratch = {

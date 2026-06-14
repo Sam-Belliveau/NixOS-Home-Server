@@ -38,9 +38,8 @@
 
       devShells.${system} = import ./devshells.nix { inherit pkgs; };
 
-      formatter.${system} = pkgs.nixfmt-rfc-style;
+      formatter.${system} = pkgs.nixfmt;
 
-      checks.${system}.toplevel =
-        self.nixosConfigurations.samb-tower.config.system.build.toplevel;
+      checks.${system}.toplevel = self.nixosConfigurations.samb-tower.config.system.build.toplevel;
     };
 }

@@ -12,7 +12,7 @@
 
     secrets = {
       "samb/hashedPassword".neededForUsers = true;
-      "cloudflared/credentials" = { };
+      "cloudflared/token" = { };
       "tailscale/authkey" = { };
       "steamgriddb/apikey".owner = "steam";
     };

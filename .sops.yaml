@@ -1,0 +1,7 @@
+keys:
+  - &samb_tower age153krgecdpddaz6agyrlfyvq22gpltlhueyh9yq5zhmjajlfamvhqzkxdvu
+creation_rules:
+  - path_regex: secrets/secrets\.yaml$
+    key_groups:
+      - age:
+          - *samb_tower

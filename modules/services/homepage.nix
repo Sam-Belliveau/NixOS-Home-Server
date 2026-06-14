@@ -14,9 +14,33 @@ in
       settings.title = "samb-tower";
 
       services = [
-        { "Media" = [ { "Jellyfin" = { href = "http://samb-tower:8096"; }; } ]; }
-        { "Home" = [ { "Home Assistant" = { href = "http://samb-tower:8123"; }; } ]; }
-        { "Network" = [ { "AdGuard Home" = { href = "http://samb-tower:3000"; }; } ]; }
+        {
+          "Media" = [
+            {
+              "Jellyfin" = {
+                href = "http://samb-tower:8096";
+              };
+            }
+          ];
+        }
+        {
+          "Home" = [
+            {
+              "Home Assistant" = {
+                href = "http://samb-tower:8123";
+              };
+            }
+          ];
+        }
+        {
+          "Network" = [
+            {
+              "AdGuard Home" = {
+                href = "http://samb-tower:3000";
+              };
+            }
+          ];
+        }
       ];
 
       widgets = [

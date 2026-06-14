@@ -22,13 +22,13 @@
       libGL
       libglvnd
       glib
-      xorg.libX11
-      xorg.libXext
-      xorg.libXrender
-      xorg.libXi
-      xorg.libXrandr
-      xorg.libXcursor
-      xorg.libXfixes
+      libx11
+      libxext
+      libxrender
+      libxi
+      libxrandr
+      libxcursor
+      libxfixes
       fontconfig
       freetype
       ffmpeg
