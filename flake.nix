@@ -37,31 +37,8 @@
         modules = [ ./hosts/samb-tower ];
       };
 
-      # ── Per-project dev shells (the reusable pattern) ────────────────────
+      # ── Dev shells: hacking on this repo + the splatting workload ────────
       devShells.${system} = import ./devshells.nix { inherit pkgs; };
-
-      templates = {
-        python-ml = {
-          path = ./templates/python-ml;
-          description = "uv venv + nix-ld for binary ML wheels";
-        };
-        cuda = {
-          path = ./templates/cuda;
-          description = "pinned cudaPackages + nvcc toolchain";
-        };
-        gaussian-splat = {
-          path = ./templates/gaussian-splat;
-          description = "COLMAP (CUDA) + nerfstudio/gsplat via uv";
-        };
-        rust = {
-          path = ./templates/rust;
-          description = "rustc/cargo/clippy + rust-analyzer";
-        };
-        cpp = {
-          path = ./templates/cpp;
-          description = "clang/gcc + cmake/ninja + lldb";
-        };
-      };
 
       # ── Tooling ──────────────────────────────────────────────────────────
       formatter.${system} = pkgs.nixfmt-rfc-style;
