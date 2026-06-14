@@ -87,6 +87,18 @@ Pushed changes are picked up by a nightly auto-upgrade. nixpkgs itself is advanc
 
 Drop a ROM into `/games/roms/<system>/` (e.g. `gamecube`, `ps2`, `n64`). A watcher imports it into Steam with SteamGridDB artwork using the standalone emulators; it appears in Game Mode after the next Steam restart. Parser definitions live in `home/steam/srm/userConfigurations.json`.
 
-## Recovery
+## Recovery (if Game Mode or the display breaks)
 
-The NVIDIA card is the only GPU, so a broken graphical boot is recovered over SSH (always on, key-only). The machine's SSH host identity is persisted on the install USB, so it is stable across reinstalls.
+Game Mode is fragile (NVIDIA + gamescope), so there are layered fallbacks:
+
+1. **Plasma desktop.** If the Steam session crashes, SDDM returns to its login screen; pick the KDE Plasma session for a full working desktop. From Steam's power menu, "Switch to Desktop" does the same.
+2. **TTY console.** `Ctrl`+`Alt`+`F3` gives a text login as `samb` (password from sops; SSH key still works for `scp`/repair).
+3. **SSH / Tailscale.** Always on, key-only. The host SSH identity is persisted on the install USB, so it is stable across reinstalls. From a laptop: `ssh samb@samb-tower`, then `sudo systemctl restart display-manager` to bounce the session, or `sudo nixos-rebuild switch --rollback`.
+4. **Moonlight.** Sunshine streams the desktop to another device if the local display itself is the problem.
+5. **Boot menu.** Pick the previous generation in systemd-boot to undo a bad update.
+
+`earlyoom` is enabled so heavy memory pressure can't freeze the whole box.
+
+## Bluetooth and audio
+
+PipeWire handles audio; Bluetooth supports headsets/AirPods/speakers (A2DP + HFP via `MultiProfile`). Classic Bluetooth audio is single-host: to move AirPods to your phone, disconnect them from the box first (Plasma's Bluetooth applet, or `bluetoothctl disconnect`). Don't mark a device "trusted" if you want it to stay easy to steal back.

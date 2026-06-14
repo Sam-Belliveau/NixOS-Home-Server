@@ -7,5 +7,6 @@
     ./nix-ld.nix
     ./auto-upgrade.nix
     ./secrets.nix
+    ./maintenance.nix
   ];
 }

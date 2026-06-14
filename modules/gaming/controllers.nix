@@ -10,6 +10,7 @@
     settings.General = {
       Experimental = true;
       FastConnectable = true;
+      MultiProfile = "multiple";
     };
   };
 

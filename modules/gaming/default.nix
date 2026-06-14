@@ -7,5 +7,6 @@
     ./sunshine.nix
     ./emulators.nix
     ./rom-pipeline.nix
+    ./tuning.nix
   ];
 }

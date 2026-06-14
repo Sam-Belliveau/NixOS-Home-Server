@@ -18,7 +18,6 @@
   hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
   hardware.enableRedistributableFirmware = true;
   services.fwupd.enable = true;
-  powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
   # Storage maintenance
   services.fstrim.enable = true;
