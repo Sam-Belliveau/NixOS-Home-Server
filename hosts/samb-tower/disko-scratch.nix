@@ -1,16 +1,4 @@
-# ╔══════════════════════════════════════════════════════════════════════════╗
-# ║  OPTIONAL / ADOPT-AFTER-PROVEN-STABLE — DISABLED BY DEFAULT.              ║
-# ║                                                                          ║
-# ║  2TB NVMe (Samsung 970 EVO Plus 2TB, fw 2B2QEXM7) currently enumerates   ║
-# ║  as state=dead / size=0. Leading theory: NVMe APST power-state drop       ║
-# ║  (mitigated by nvme_core.default_ps_max_latency_us=0 in hardware.nix);    ║
-# ║  secondary theory: a failing unit. Do NOT import this file in            ║
-# ║  hosts/samb-tower/default.nix and do NOT flip the toggle until the drive  ║
-# ║  has survived several cold/warm boots WITH the APST param applied.        ║
-# ║                                                                          ║
-# ║  Nothing irreplaceable lives here: build cache, extra Steam library,     ║
-# ║  dataset scratch only. DESTRUCTIVE on enable.                            ║
-# ╚══════════════════════════════════════════════════════════════════════════╝
+# DESTRUCTIVE on enable. Disabled and unimported by default. See HARVEST.md.
 { config, lib, ... }:
 let
   cfg = config.samb.scratch;

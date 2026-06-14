@@ -1,5 +1,5 @@
 {
-  description = "samb-tower — couch Steam Game Mode + headless dev/server (NixOS 26.05)";
+  description = "samb-tower - couch Steam Game Mode + headless dev/server (NixOS 26.05)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -31,16 +31,13 @@
       };
     in
     {
-      # ── The machine ──────────────────────────────────────────────────────
       nixosConfigurations.samb-tower = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [ ./hosts/samb-tower ];
       };
 
-      # ── Dev shells: hacking on this repo + the splatting workload ────────
       devShells.${system} = import ./devshells.nix { inherit pkgs; };
 
-      # ── Tooling ──────────────────────────────────────────────────────────
       formatter.${system} = pkgs.nixfmt-rfc-style;
 
       checks.${system}.toplevel =

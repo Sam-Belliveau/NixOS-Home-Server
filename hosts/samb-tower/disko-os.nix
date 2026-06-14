@@ -1,7 +1,4 @@
-# ╔══════════════════════════════════════════════════════════════════════════╗
-# ║  DESTRUCTIVE: disko wipes and repartitions the entire 1TB OS NVMe.        ║
-# ║  Addressed by stable /dev/disk/by-id path — never /dev/nvmeXnY.           ║
-# ╚══════════════════════════════════════════════════════════════════════════╝
+# DESTRUCTIVE: disko wipes and repartitions the entire 1TB OS NVMe.
 let
   mountOpts = [
     "compress=zstd:1"
@@ -55,7 +52,7 @@ in
                 mountOptions = mountOpts;
               };
 
-              # Swapfile (nodatacow + no compression handled by mkswapfile).
+              # mkswapfile sets nodatacow and disables compression here.
               "@swap" = {
                 mountpoint = "/swap";
                 swap.swapfile = {

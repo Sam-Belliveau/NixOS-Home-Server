@@ -8,7 +8,7 @@
     ./hardware.nix
     ./disko-os.nix
     ./disko-data.nix
-    # ./disko-scratch.nix          # 2TB — DISABLED; read the file header before enabling.
+    # ./disko-scratch.nix          # 2TB - DISABLED; read the file header before enabling.
 
     ../../modules/system
     ../../modules/desktop
@@ -20,7 +20,7 @@
 
   networking.hostName = "samb-tower";
 
-  # ── Service manifest — one switch per service ──────────────────────────
+  # Service manifest - one switch per service
   myServices = {
     homeAssistant.enable = true;
     cloudflared.enable = true;
@@ -30,7 +30,7 @@
     homepage.enable = true;
   };
 
-  # ── home-manager: both login users ─────────────────────────────────────
+  # home-manager: both login users
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;

@@ -1,6 +1,6 @@
 { config, lib, ... }:
 {
-  # ── Boot / initrd ────────────────────────────────────────────────────────
+  # Boot / initrd
   boot.initrd.availableKernelModules = [
     "nvme"
     "xhci_pci"
@@ -11,16 +11,16 @@
   ];
   boot.kernelModules = [ "kvm-intel" ];
 
-  # Samsung 970 EVO Plus drops to state=dead on deep NVMe APST power states.
+  # Disable deep NVMe APST, which drops the 2TB 970 EVO Plus to state=dead.
   boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=0" ];
 
-  # ── CPU microcode + firmware (System76 Thelio, i9-9900K) ─────────────────
+  # CPU microcode + firmware
   hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
   hardware.enableRedistributableFirmware = true;
   services.fwupd.enable = true;
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
-  # ── Storage maintenance ──────────────────────────────────────────────────
+  # Storage maintenance
   services.fstrim.enable = true;
   services.btrfs.autoScrub = {
     enable = true;

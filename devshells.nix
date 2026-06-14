@@ -6,13 +6,11 @@ let
   );
 in
 {
-  # ── Hacking on this repo ─────────────────────────────────────────────────
   default = pkgs.mkShell {
     packages = with pkgs; [ git just direnv nixd nixfmt-rfc-style ];
   };
 
-  # ── Photogrammetry / gaussian-splatting (COLMAP+CUDA is painful to assemble)
-  #   nix develop github:Sam-Belliveau/NixOS-Home-Server#gaussian-splat
+  # COLMAP (CUDA) + toolchain for nerfstudio/gsplat via uv.
   gaussian-splat = pkgs.mkShell {
     packages =
       [ (pkgs.colmap.override { cudaSupport = true; }) ]
@@ -21,7 +19,6 @@ in
     shellHook = ''
       export CUDA_HOME="${cuda.cuda_nvcc}"
       export NIX_LD_LIBRARY_PATH="${ldPath}:''${NIX_LD_LIBRARY_PATH:-}"
-      echo "uv venv && uv pip install nerfstudio gsplat"
     '';
   };
 }

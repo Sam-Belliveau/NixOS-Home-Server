@@ -1,7 +1,4 @@
-# ╔══════════════════════════════════════════════════════════════════════════╗
-# ║  DESTRUCTIVE: disko wipes and repartitions the entire 4TB DATA SSD.       ║
-# ║  Addressed by stable /dev/disk/by-id path — never /dev/sdX.               ║
-# ╚══════════════════════════════════════════════════════════════════════════╝
+# DESTRUCTIVE: disko wipes and repartitions the entire 4TB DATA SSD.
 let
   mountOpts = [
     "compress=zstd:2"
