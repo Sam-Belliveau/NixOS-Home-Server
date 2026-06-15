@@ -63,4 +63,41 @@ in
   '';
 
   services.logind.settings.Login.IdleAction = "ignore";
+
+  # Active reconnect poller for trusted controllers.
+  #
+  # The Stadia pad speaks Bluetooth LE (HOGP), not classic BR/EDR. A DS4/Xbox
+  # pad *pages the host* itself on power-on, so bluez reconnects it reliably; a
+  # Stadia only briefly *advertises*, and bluez's passive background scan
+  # intermittently misses that window. When it misses, the LE link may come up
+  # but the HID profile never binds, so the pad looks dead and you end up doing
+  # the forget-and-re-add dance. Having the host actively initiate the
+  # connection closes that race. (Confirmed on this box: the kernel `stadia`
+  # driver rebinds on some reconnects but not others — see `journalctl -k`.)
+  #
+  # Generic over any trusted input-gaming device; a connected pad is skipped so
+  # this never interferes with an in-progress session.
+  systemd.services.controller-reconnect = {
+    description = "Reconnect trusted Bluetooth game controllers";
+    after = [ "bluetooth.target" ];
+    serviceConfig.Type = "oneshot";
+    path = [ pkgs.bluez pkgs.gnugrep pkgs.gawk pkgs.coreutils ];
+    script = ''
+      bluetoothctl devices Trusted | awk '{print $2}' | while read -r mac; do
+        info=$(bluetoothctl info "$mac" 2>/dev/null) || continue
+        grep -q "Icon: input-gaming" <<<"$info" || continue   # controllers only
+        grep -q "Connected: yes"     <<<"$info" && continue   # already up, leave it
+        timeout 8 bluetoothctl connect "$mac" >/dev/null 2>&1 || true
+      done
+    '';
+  };
+
+  systemd.timers.controller-reconnect = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "20s";
+      OnUnitInactiveSec = "20s"; # 20s after each run finishes (no overlap)
+      AccuracySec = "2s";
+    };
+  };
 }
