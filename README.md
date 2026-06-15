@@ -87,6 +87,8 @@ Pushed changes are picked up by a nightly auto-upgrade. nixpkgs itself is advanc
 
 Drop a ROM into `/games/roms/<system>/` (e.g. `gamecube`, `ps2`, `n64`). A watcher imports it into Steam with SteamGridDB artwork using the standalone emulators; it appears in Game Mode after the next Steam restart. Parser definitions live in `home/steam/srm/userConfigurations.json`.
 
+Desktop apps (Vesktop, Chrome) are surfaced in Game Mode the same way, under an "Apps" category, via `home/steam/srm/manifests/`. The importer also runs once per boot before the session, so after you've signed into Steam once, ROMs and apps populate automatically on the next boot.
+
 ## Recovery (if Game Mode or the display breaks)
 
 Game Mode is fragile (NVIDIA + gamescope), so there are layered fallbacks:

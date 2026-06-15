@@ -163,5 +163,19 @@
     "steamCategories": ["ROMs", "Xbox"],
     "drmProtect": false,
     "fuzzyMatch": { "use": true, "removeCharacters": true, "removeBrackets": true }
+  },
+  {
+    "parserType": "Manual",
+    "configTitle": "Apps",
+    "steamDirectory": "/home/steam/.steam/steam",
+    "executableArgs": "",
+    "executable": { "path": "", "shortcutPassthrough": false, "appendArgsToExecutable": false },
+    "parserInputs": { "manualManifests": "/home/steam/.config/steam-rom-manager/manifests" },
+    "titleModifier": "${title}",
+    "imageProviders": ["SteamGridDB"],
+    "onlineImageQueries": "${title}",
+    "steamCategories": ["Apps"],
+    "drmProtect": false,
+    "fuzzyMatch": { "use": true, "removeCharacters": true, "removeBrackets": true }
   }
 ]

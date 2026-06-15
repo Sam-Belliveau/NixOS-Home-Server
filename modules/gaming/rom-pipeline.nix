@@ -15,6 +15,11 @@ let
         echo "gamescope running; deferring import"
         exit 0
       fi
+      # Nothing to write to until Steam has been signed into once.
+      if ! ls -d "$HOME"/.steam/steam/userdata/*/ >/dev/null 2>&1; then
+        echo "Steam not signed in yet; skipping import"
+        exit 0
+      fi
       STEAMGRIDDB_API_KEY="$(cat ${config.sops.secrets."steamgriddb/apikey".path})"
       export STEAMGRIDDB_API_KEY
       steam-rom-manager enable --all
@@ -28,18 +33,21 @@ in
     reimport
   ];
 
-  # Import dropped ROMs as Steam shortcuts with SteamGridDB artwork. Runs as the
-  # Game Mode user so SRM writes that account's library.
+  # Import ROMs + app shortcuts (Vesktop, Chrome) as the Game Mode user, before
+  # the session starts. Runs each boot; SteamGridDB artwork is cached after first.
   systemd.services.rom-import = {
+    wantedBy = [ "multi-user.target" ];
+    before = [ "display-manager.service" ];
+    after = [ "local-fs.target" ];
     serviceConfig = {
       Type = "oneshot";
       User = "steam";
-      ExecStartPre = "${pkgs.coreutils}/bin/sleep 15";
+      TimeoutStartSec = 120;
       ExecStart = "${reimport}/bin/srm-reimport";
     };
   };
 
-  # Watch the drop folder (recursively) and trigger a re-import on any change.
+  # Live drops: import ROMs added while the box is up.
   systemd.services.rom-watch = {
     wantedBy = [ "multi-user.target" ];
     after = [ "local-fs.target" ];
@@ -49,6 +57,7 @@ in
         ${pkgs.inotify-tools}/bin/inotifywait -m -r \
           -e close_write -e moved_to -e delete "${romRoot}" |
         while read -r _; do
+          ${pkgs.coreutils}/bin/sleep 15
           ${pkgs.systemd}/bin/systemctl start --no-block rom-import.service
         done
       '';

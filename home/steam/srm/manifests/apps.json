@@ -1,0 +1,16 @@
+[
+  {
+    "title": "Vesktop",
+    "target": "/run/current-system/sw/bin/vesktop",
+    "startIn": "/home/steam",
+    "launchOptions": "",
+    "appendArgsToExecutable": false
+  },
+  {
+    "title": "Google Chrome",
+    "target": "/run/current-system/sw/bin/google-chrome-stable",
+    "startIn": "/home/steam",
+    "launchOptions": "",
+    "appendArgsToExecutable": false
+  }
+]
