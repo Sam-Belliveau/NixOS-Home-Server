@@ -49,15 +49,11 @@ If it stays dead, RMA it. Nothing irreplaceable ever lives there.
 
 ## Secrets to harvest (go into the encrypted store, see SECRETS.md)
 
-- **cloudflared**: the existing tunnel credentials JSON and its tunnel UUID.
-  ```bash
-  sudo ls /etc/cloudflared /root/.cloudflared ~/.cloudflared 2>/dev/null
-  # copy <UUID>.json into sops; put the real UUID into
-  #   modules/services/cloudflared.nix (tunnels."<UUID>") and add ingress hosts.
-  ```
-- **tailscale**: create an auth key in the admin console -> sops `tailscale/authkey`.
-  First-time interactive join also works: `sudo tailscale up`.
-- **SteamGridDB**: an API key from steamgriddb.com -> sops `steamgriddb/apikey`.
+- **cloudflared**: the tunnel is token-managed; the token is harvested from the
+  existing `cloudflared.service` and stored as sops `cloudflared/token`. Ingress
+  is configured in the Cloudflare dashboard, not in the repo.
+- **tailscale**: an auth key from the admin console -> sops `tailscale/authkey` (joins on boot). (set)
+- **SteamGridDB**: an API key from steamgriddb.com -> sops `steamgriddb/apikey`. (set)
 - **samb password**: `mkpasswd -m yescrypt` -> sops `samb/hashedPassword`.
 
 ## Controllers

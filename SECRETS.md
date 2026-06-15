@@ -11,7 +11,7 @@ The raw host key is the single persisted secret: it lives on the install USB's
 | Key | Used by |
 |-----|---------|
 | `samb/hashedPassword` | the `samb` login + sudo |
-| `cloudflared/credentials` | the Cloudflare tunnel |
+| `cloudflared/token` | the Cloudflare tunnel |
 | `tailscale/authkey` | unattended Tailscale join |
 | `steamgriddb/apikey` | ROM artwork lookups |
 
@@ -36,8 +36,7 @@ nix run nixpkgs#sops -- secrets/secrets.yaml
 samb:
   hashedPassword: "$y$..."
 cloudflared:
-  credentials: |
-    { "AccountTag": "...", "TunnelID": "...", "TunnelSecret": "..." }
+  token: "eyJ..."
 tailscale:
   authkey: "tskey-auth-..."
 steamgriddb:
