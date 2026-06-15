@@ -8,10 +8,10 @@ in
 {
   programs.steam = {
     enable = true;
-    gamescopeSession = {
-      enable = true;
-      env.ENABLE_GAMESCOPE_WSI = "1";
-    };
+    # NOTE: do NOT set env.ENABLE_GAMESCOPE_WSI here. It leaks into gamescope's
+    # own process, loading the WSI Vulkan layer into the compositor itself, which
+    # segfaults on NVIDIA (595 / gamescope 3.16.23) and crashes the session.
+    gamescopeSession.enable = true;
     remotePlay.openFirewall = true;
     extest.enable = true;
     protontricks.enable = true;
