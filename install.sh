@@ -4,10 +4,19 @@
 # NixOS. Re-runnable for a clean reinstall.
 set -euo pipefail
 
-FLAKE="github:Sam-Belliveau/NixOS-Home-Server#samb-tower"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
-export NIX_CONFIG="experimental-features = nix-command flakes"
+# Optional commit/branch/tag to install (e.g. ./install.sh eae5679).
+# Defaults to the latest commit on the default branch.
+REPO="github:Sam-Belliveau/NixOS-Home-Server"
+REF="${1:-}"
+FLAKE="$REPO${REF:+/$REF}#samb-tower"
+
+# tarball-ttl = 0 forces Nix to re-resolve the mutable github: ref on every run.
+# Without it, Nix reuses a cached revision for up to an hour, which previously
+# reinstalled a stale closure even after a fresh push.
+export NIX_CONFIG="experimental-features = nix-command flakes
+tarball-ttl = 0"
 
 echo ">> Partition + format (DESTROYS the 1TB OS and 4TB data disks)"
 nix run github:nix-community/disko -- --mode destroy,format,mount --flake "$FLAKE"
