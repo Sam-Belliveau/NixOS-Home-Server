@@ -8,7 +8,9 @@
   };
 
   hardware.nvidia = {
-    open = true;
+    # Proprietary kernel modules: the open (GSP) ones fail the GLSL->SPIR-V
+    # path on this GPU, which crashed the gamescope session.
+    open = false;
     modesetting.enable = true;
     nvidiaSettings = true;
     powerManagement.enable = false;
