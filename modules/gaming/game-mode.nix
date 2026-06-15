@@ -20,7 +20,10 @@ in
 
   programs.gamescope = {
     enable = true;
-    capSysNice = true;
+    # Keep false: with gamescopeSession.enable, capSysNice makes nixpkgs build a
+    # setuid bwrap wrapper around bubblewrap 0.11.2 (which dropped setuid
+    # support), and that broken wrapper blocks Steam from launching at all.
+    capSysNice = false;
   };
 
   # Autologin into the gamescope Steam session; log out to choose Plasma.
