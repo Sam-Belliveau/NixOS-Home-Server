@@ -14,7 +14,7 @@
       "samb/hashedPassword".neededForUsers = true;
       "cloudflared/token" = { };
       "tailscale/authkey" = { };
-      "steamgriddb/apikey".owner = "steam";
+      "steamgriddb/apikey".owner = "samb";
     };
   };
 }

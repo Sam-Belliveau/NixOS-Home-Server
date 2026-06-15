@@ -26,7 +26,8 @@ in
     capSysNice = false;
   };
 
-  # Autologin into the gamescope Steam session; log out to choose Plasma.
+  # Autologin samb into the gamescope Steam session ("steam" here is the session
+  # name, not a user). Switch to Desktop / log out to pick Plasma.
   services.displayManager = {
     sddm = {
       enable = true;
@@ -34,7 +35,7 @@ in
     };
     autoLogin = {
       enable = true;
-      user = "steam";
+      user = "samb";
     };
     defaultSession = "steam";
   };

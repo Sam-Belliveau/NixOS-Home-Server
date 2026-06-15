@@ -36,7 +36,6 @@
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
     users.samb = import ../../home/samb.nix;
-    users.steam = import ../../home/steam.nix;
   };
 
   system.stateVersion = "26.05";

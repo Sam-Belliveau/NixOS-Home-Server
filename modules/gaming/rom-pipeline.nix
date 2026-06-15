@@ -42,7 +42,7 @@ in
     after = [ "local-fs.target" ];
     serviceConfig = {
       Type = "oneshot";
-      User = "steam";
+      User = "samb";
       TimeoutStartSec = 120;
       ExecStart = "${reimport}/bin/srm-reimport";
     };

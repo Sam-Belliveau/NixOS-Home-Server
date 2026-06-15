@@ -10,6 +10,7 @@
       "gamelib"
       "video"
       "render"
+      "input" # controllers in Game Mode (previously via the steam user)
     ];
     shell = pkgs.zsh;
     hashedPasswordFile = config.sops.secrets."samb/hashedPassword".path;
