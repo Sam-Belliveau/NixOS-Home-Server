@@ -22,6 +22,10 @@
 
   environment.systemPackages = [ pkgs.claude-code ];
 
+  # Ship terminfo for many terminal emulators (incl. ghostty's xterm-ghostty)
+  # so TERM is recognized over SSH instead of breaking colors/clear/keys.
+  environment.enableAllTerminfo = true;
+
   # Locale / time / console
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
