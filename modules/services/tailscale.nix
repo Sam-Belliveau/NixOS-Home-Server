@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 {
   services.tailscale = {
     enable = true;
@@ -15,7 +15,8 @@
   # Disable reverse-path filtering. With useRoutingFeatures = "client", tailscale
   # sets up policy routing (fwmark 0x80000 + peer routes in table 52), and the
   # firewall's rpfilter --validmark then drops inbound tailnet packets (their
-  # marked route lookup hits the "unreachable" rule instead of table 52). That
-  # silently blocks SSH and all services over Tailscale. Safe on a NAT'd box.
-  networking.firewall.checkReversePath = false;
+  # marked route lookup hits the "unreachable" rule instead of table 52),
+  # silently blocking SSH and all services over Tailscale. The upstream tailscale
+  # module sets this to "loose", but loose still drops here, so mkForce false.
+  networking.firewall.checkReversePath = lib.mkForce false;
 }
