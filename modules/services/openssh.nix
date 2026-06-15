@@ -6,7 +6,8 @@
     openFirewall = true;
     settings = {
       PermitRootLogin = "no";
-      PasswordAuthentication = false;
+      # Password login allowed (LAN brute-force surface; acceptable for a home box).
+      PasswordAuthentication = true;
       KbdInteractiveAuthentication = false;
     };
   };
