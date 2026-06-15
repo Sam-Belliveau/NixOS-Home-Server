@@ -8,8 +8,16 @@ in
   config = lib.mkIf cfg.enable {
     services.homepage-dashboard = {
       enable = true;
-      openFirewall = true;
       listenPort = 8082;
+
+      # Not opened to the LAN; reachable only over Tailscale
+      # (see trustedInterfaces in the tailscale module).
+      #
+      # Homepage does strict Host-header validation; the default only allows
+      # localhost. Reaching it by hostname (README links, Tailscale) needs the
+      # name allow-listed too. Add the MagicDNS name if you hit it that way,
+      # e.g. "samb-tower.<tailnet>.ts.net:8082".
+      allowedHosts = "samb-tower:8082,localhost:8082,127.0.0.1:8082";
 
       settings.title = "samb-tower";
 

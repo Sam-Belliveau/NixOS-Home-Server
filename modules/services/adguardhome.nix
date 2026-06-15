@@ -8,11 +8,12 @@ in
   config = lib.mkIf cfg.enable {
     services.adguardhome = {
       enable = true;
-      openFirewall = true;
       port = 3000;
     };
 
-    # openFirewall covers the web UI only; DNS needs port 53 opened explicitly.
+    # DNS must stay open to the LAN (this box is the LAN resolver).
+    # The web UI on :3000 is deliberately NOT opened to the LAN; it's reachable
+    # only over Tailscale (see trustedInterfaces in the tailscale module).
     networking.firewall.allowedTCPPorts = [ 53 ];
     networking.firewall.allowedUDPPorts = [ 53 ];
 

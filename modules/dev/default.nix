@@ -4,6 +4,5 @@
     ./cli.nix
     ./toolchains.nix
     ./python.nix
-    ./tex.nix
   ];
 }

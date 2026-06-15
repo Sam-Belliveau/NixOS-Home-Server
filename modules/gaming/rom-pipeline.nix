@@ -10,9 +10,10 @@ let
       pkgs.coreutils
     ];
     text = ''
-      # Steam must be closed or SRM corrupts shortcuts.vdf.
-      if pgrep -x gamescope >/dev/null; then
-        echo "gamescope running; deferring import"
+      # Steam must be closed or SRM corrupts shortcuts.vdf. Guard against both
+      # Game Mode (gamescope) and the desktop Steam client.
+      if pgrep -x gamescope >/dev/null || pgrep -x steam >/dev/null; then
+        echo "Steam/gamescope running; deferring import"
         exit 0
       fi
       # Nothing to write to until Steam has been signed into once.

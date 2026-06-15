@@ -28,7 +28,7 @@ The whole machine is declared here. There is no manual post-install fiddling bey
 | `modules/system/` | nix settings, boot, swap, nix-ld, auto-upgrade, secrets |
 | `modules/desktop/` | Plasma 6, fonts |
 | `modules/gaming/` | NVIDIA, Game Mode session, controllers, Sunshine, emulators, ROM pipeline |
-| `modules/dev/` | compilers, language runtimes, Python tooling, TeX |
+| `modules/dev/` | compilers, language runtimes, Python tooling |
 | `modules/services/` | sshd, tailscale, cloudflared, Home Assistant, Jellyfin, Syncthing, AdGuard, Homepage |
 | `modules/users/` | the `steam` and `samb` accounts and the shared `gamelib` group |
 | `home/` | per-user home-manager (shell, prompt, git, VS Code) |
@@ -78,9 +78,9 @@ Pushed changes are picked up by a nightly auto-upgrade. nixpkgs itself is advanc
 | SSH | 22 | key-only; the sole recovery path |
 | Home Assistant | 8123 | data in `/srv/home-assistant` |
 | Jellyfin | 8096 | NVENC via the Jellyfin dashboard |
-| AdGuard Home | 3000 (UI), 53 (DNS) | disables the resolved stub |
-| Homepage | 8082 | service + system dashboard |
-| Syncthing | 8384 (UI over Tailscale) | runs as `samb` |
+| AdGuard Home | 3000 (UI), 53 (DNS) | UI is Tailscale-only; DNS open to the LAN; disables the resolved stub |
+| Homepage | 8082 | service + system dashboard; Tailscale-only |
+| Syncthing | 8384 (UI over Tailscale) | runs as `samb`; sync ports open to LAN/internet |
 | Sunshine | 47990 (UI) | stream to Moonlight clients |
 
 ## ROMs

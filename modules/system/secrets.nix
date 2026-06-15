@@ -5,9 +5,9 @@
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
     age = {
+      # The SSH host key *is* the age identity. No separately generated key:
+      # nothing is encrypted to one and it isn't a recipient in .sops.yaml.
       sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-      keyFile = "/var/lib/sops-nix/key.txt";
-      generateKey = true;
     };
 
     secrets = {
