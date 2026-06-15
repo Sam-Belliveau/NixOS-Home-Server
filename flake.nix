@@ -1,11 +1,15 @@
 {
-  description = "samb-tower - couch Steam Game Mode + headless dev/server (NixOS 26.05)";
+  description = "samb-tower - couch Steam Game Mode + headless dev/server (NixOS unstable, for Jovian)";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    # nixos-unstable: required by Jovian-NixOS (it only supports unstable; its
+    # gamescope overlay is applied to *this* nixpkgs). flake.lock pins the exact
+    # rev, so "rolling" only moves when you `nix flake update`.
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
+      # master tracks nixpkgs unstable (release-* tracks stable).
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
