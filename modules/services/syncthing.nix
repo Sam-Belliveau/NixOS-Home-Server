@@ -6,6 +6,10 @@ in
   options.myServices.syncthing.enable = lib.mkEnableOption "Syncthing";
 
   config = lib.mkIf cfg.enable {
+    # /srv is root-owned, so syncthing (running as samb) can't create its own
+    # data dir there. Pre-create it with the right owner before the service starts.
+    systemd.tmpfiles.rules = [ "d /srv/syncthing 0700 samb users -" ];
+
     services.syncthing = {
       enable = true;
       user = "samb";
