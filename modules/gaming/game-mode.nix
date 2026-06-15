@@ -1,44 +1,30 @@
-{ pkgs, ... }:
-let
-  # Steam's "Switch to Desktop" runs this; ending the session shows the picker.
-  sessionSelect = pkgs.writeShellScriptBin "steamos-session-select" ''
-    exec ${pkgs.systemd}/bin/loginctl terminate-user "$(id -u)"
-  '';
-in
+{ pkgs, inputs, ... }:
 {
+  # SteamOS-style Game Mode via Jovian-NixOS. Jovian provides the gamescope
+  # session AND a working `steamos-session-select`, replacing the old
+  # hand-rolled `loginctl terminate-user` shim that black-screened on NVIDIA
+  # when handing the display back to a greeter.
+  imports = [ inputs.jovian.nixosModules.default ];
+
+  jovian.steam = {
+    enable = true;
+    autoStart = true; # boot straight into Game Mode
+    user = "samb"; # who Game Mode runs/autologins as
+    desktopSession = "plasma"; # "Switch to Desktop" -> Plasma 6 (+ Return to Gaming Mode)
+  };
+
+  # Steam itself + extras. Jovian owns the gamescope *session*, so we no longer
+  # set programs.steam.gamescopeSession or programs.gamescope here (that combo
+  # was what built the broken setuid bwrap wrapper).
   programs.steam = {
     enable = true;
-    # NOTE: do NOT set env.ENABLE_GAMESCOPE_WSI here. It leaks into gamescope's
-    # own process, loading the WSI Vulkan layer into the compositor itself, which
-    # segfaults on NVIDIA (595 / gamescope 3.16.23) and crashes the session.
-    gamescopeSession.enable = true;
     remotePlay.openFirewall = true;
     extest.enable = true;
     protontricks.enable = true;
     extraCompatPackages = [ pkgs.proton-ge-bin ];
   };
 
-  programs.gamescope = {
-    enable = true;
-    # Keep false: with gamescopeSession.enable, capSysNice makes nixpkgs build a
-    # setuid bwrap wrapper around bubblewrap 0.11.2 (which dropped setuid
-    # support), and that broken wrapper blocks Steam from launching at all.
-    capSysNice = false;
-  };
-
-  # Autologin samb into the gamescope Steam session ("steam" here is the session
-  # name, not a user). Switch to Desktop / log out to pick Plasma.
-  services.displayManager = {
-    sddm = {
-      enable = true;
-      wayland.enable = true;
-    };
-    autoLogin = {
-      enable = true;
-      user = "samb";
-    };
-    defaultSession = "steam";
-  };
-
-  environment.systemPackages = [ sessionSelect ];
+  # No display manager: jovian.steam.autoStart launches Game Mode directly on
+  # boot (a traditional DM like SDDM cannot coexist with autoStart), and
+  # desktopSession="plasma" starts Plasma when you Switch to Desktop.
 }

@@ -18,6 +18,14 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # SteamOS-style Game Mode on generic hardware: proper gamescope session +
+    # a working steamos-session-select (reliable Game Mode <-> Desktop switch).
+    # Wired into the host via modules/gaming/game-mode.nix.
+    jovian = {
+      url = "github:Jovian-Experiments/Jovian-NixOS";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
