@@ -60,6 +60,22 @@
         printf '%s' "$_data" | base64 -d 2>/dev/null
       }
 
+      # Rebuild samb-tower from the latest commit on GitHub main, pinning the
+      # exact rev so the build is reproducible (and printed). Builds straight
+      # from the GitHub flake ref, so it needs no local checkout. Reboots on a
+      # successful switch -- swap `sudo reboot` for
+      # `systemctl --user restart sunshine` if you only want to re-activate
+      # user services without a full reboot.
+      pull_and_rebuild() {
+        local repo="Sam-Belliveau/NixOS-Home-Server" host="samb-tower" sha
+        sha=$(git ls-remote "https://github.com/$repo" refs/heads/main | cut -f1) || return 1
+        [[ -n "$sha" ]] || { echo "pull_and_rebuild: could not resolve latest commit" >&2; return 1; }
+        echo "==> Rebuilding $host from $repo @ $sha"
+        sudo nixos-rebuild switch --flake "github:$repo/$sha#$host" || return 1
+        echo "==> Switch OK. Rebooting…"
+        sudo reboot
+      }
+
       bindkey -e   # emacs keybindings (so the bindings below land predictably)
 
       # Tab is left as the stock completion menu — one key, one behavior, never
