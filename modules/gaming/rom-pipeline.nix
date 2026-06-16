@@ -1,46 +1,45 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
   romRoot = "/games/roms";
 
+  # Headless shortcut generator. Steam ROM Manager is an Electron app that hangs
+  # when run without a display (e.g. at boot), so instead of driving SRM we read
+  # its declarative config and write shortcuts.vdf ourselves. SRM stays installed
+  # for managing artwork from the desktop; this owns the automated import.
+  pyEnv = pkgs.python3.withPackages (ps: [ ps.vdf ]);
+
   reimport = pkgs.writeShellApplication {
-    name = "srm-reimport";
+    name = "steam-shortcuts-sync";
     runtimeInputs = [
-      pkgs.steam-rom-manager
-      pkgs.xvfb-run # SRM is Electron; needs a display even for the `add` CLI
+      pyEnv
       pkgs.procps
       pkgs.coreutils
     ];
     text = ''
-      # Steam must be closed or SRM corrupts shortcuts.vdf. Guard against both
-      # Game Mode (gamescope) and the desktop Steam client.
+      # Steam rewrites shortcuts.vdf on exit and would clobber our changes, so
+      # only write while it's closed. This service runs at boot, before the
+      # Game Mode session starts.
       if pgrep -x gamescope >/dev/null || pgrep -x steam >/dev/null; then
-        echo "Steam/gamescope running; deferring import"
+        echo "Steam/gamescope running; deferring shortcut sync"
         exit 0
       fi
       # Nothing to write to until Steam has been signed into once.
       if ! ls -d "$HOME"/.steam/steam/userdata/*/ >/dev/null 2>&1; then
-        echo "Steam not signed in yet; skipping import"
+        echo "Steam not signed in yet; skipping sync"
         exit 0
       fi
-      STEAMGRIDDB_API_KEY="$(cat ${config.sops.secrets."steamgriddb/apikey".path})"
-      export STEAMGRIDDB_API_KEY
-      # SRM bundles Electron, so even the `add` CLI boots Chromium and needs a
-      # display. This service runs at boot (Steam closed) *before* any
-      # compositor exists, so without a display Electron segfaults (status 139)
-      # and never writes shortcuts.vdf. Hand it a throwaway virtual X display.
-      xvfb-run -a steam-rom-manager enable --all
-      xvfb-run -a steam-rom-manager add
+      exec python3 ${./steam-shortcuts.py}
     '';
   };
 in
 {
   environment.systemPackages = [
-    pkgs.steam-rom-manager
+    pkgs.steam-rom-manager # desktop GUI, kept for artwork management
     reimport
   ];
 
-  # Import ROMs + app shortcuts (Vesktop, Chrome) as the Game Mode user, before
-  # the session starts. Runs each boot; SteamGridDB artwork is cached after first.
+  # Write app + ROM shortcuts as the Game Mode user, before the session starts.
+  # Runs each boot; cheap (globs folders + writes a binary file, no network).
   systemd.services.rom-import = {
     wantedBy = [ "multi-user.target" ];
     before = [ "display-manager.service" ];
@@ -49,11 +48,12 @@ in
       Type = "oneshot";
       User = "samb";
       TimeoutStartSec = 120;
-      ExecStart = "${reimport}/bin/srm-reimport";
+      ExecStart = "${reimport}/bin/steam-shortcuts-sync";
     };
   };
 
-  # Live drops: import ROMs added while the box is up.
+  # Live drops: re-sync when ROMs are added while the box is up. (Takes effect on
+  # the next boot/Steam restart, since Steam owns shortcuts.vdf while running.)
   systemd.services.rom-watch = {
     wantedBy = [ "multi-user.target" ];
     after = [ "local-fs.target" ];
