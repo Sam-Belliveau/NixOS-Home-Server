@@ -2,7 +2,7 @@
   {
     "parserType": "Glob",
     "configTitle": "GameCube",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/gamecube",
     "executableArgs": "\"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/dolphin-emu", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -17,7 +17,7 @@
   {
     "parserType": "Glob",
     "configTitle": "Wii",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/wii",
     "executableArgs": "\"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/dolphin-emu", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -32,7 +32,7 @@
   {
     "parserType": "Glob",
     "configTitle": "PS2",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/ps2",
     "executableArgs": "-batch \"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/pcsx2-qt", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -47,7 +47,7 @@
   {
     "parserType": "Glob",
     "configTitle": "N64",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/n64",
     "executableArgs": "\"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/ares", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -62,7 +62,7 @@
   {
     "parserType": "Glob",
     "configTitle": "DS",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/ds",
     "executableArgs": "\"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/melonDS", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -77,7 +77,7 @@
   {
     "parserType": "Glob",
     "configTitle": "GBA",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/gba",
     "executableArgs": "\"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/mgba-qt", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -92,7 +92,7 @@
   {
     "parserType": "Glob",
     "configTitle": "PSP",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/psp",
     "executableArgs": "\"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/PPSSPPSDL", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -107,7 +107,7 @@
   {
     "parserType": "Glob",
     "configTitle": "PS3",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/ps3",
     "executableArgs": "\"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/rpcs3", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -122,7 +122,7 @@
   {
     "parserType": "Glob",
     "configTitle": "WiiU",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/wiiu",
     "executableArgs": "-g \"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/cemu", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -137,7 +137,7 @@
   {
     "parserType": "Glob",
     "configTitle": "3DS",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/3ds",
     "executableArgs": "\"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/azahar", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -152,7 +152,7 @@
   {
     "parserType": "Glob",
     "configTitle": "Xbox",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "romDirectory": "/games/roms/xbox",
     "executableArgs": "-dvd_path \"${filePath}\"",
     "executable": { "path": "/run/current-system/sw/bin/xemu", "shortcutPassthrough": false, "appendArgsToExecutable": false },
@@ -167,10 +167,10 @@
   {
     "parserType": "Manual",
     "configTitle": "Apps",
-    "steamDirectory": "/home/steam/.steam/steam",
+    "steamDirectory": "/home/samb/.steam/steam",
     "executableArgs": "",
     "executable": { "path": "", "shortcutPassthrough": false, "appendArgsToExecutable": false },
-    "parserInputs": { "manualManifests": "/home/steam/.config/steam-rom-manager/manifests" },
+    "parserInputs": { "manualManifests": "/home/samb/.config/steam-rom-manager/manifests" },
     "titleModifier": "${title}",
     "imageProviders": ["SteamGridDB"],
     "onlineImageQueries": "${title}",
