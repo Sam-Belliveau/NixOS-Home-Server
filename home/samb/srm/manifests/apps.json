@@ -17,7 +17,7 @@
     "title": "YouTube",
     "target": "/run/current-system/sw/bin/google-chrome-stable",
     "startIn": "/home/samb",
-    "launchOptions": "--user-data-dir=/home/samb/.local/share/chrome-apps/youtube --no-first-run --no-default-browser-check --kiosk https://www.youtube.com/tv",
+    "launchOptions": "--user-data-dir=/home/samb/.local/share/chrome-apps/youtube --no-first-run --no-default-browser-check --user-agent=\"Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36\" --kiosk https://www.youtube.com/tv",
     "appendArgsToExecutable": false
   },
   {
