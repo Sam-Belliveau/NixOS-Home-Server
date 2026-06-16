@@ -30,6 +30,9 @@ STEAM_ROOT = os.environ.get(
 SIDECAR = os.path.join(
     HOME, ".local", "share", "nix-steam-shortcuts", "managed-appids.json"
 )
+# When set, every shortcut launches through this wrapper, which scrubs the
+# steam-runtime LD_LIBRARY_PATH that otherwise kills Nix-built binaries.
+LAUNCH_WRAPPER = os.environ.get("LAUNCH_WRAPPER", "")
 
 
 def log(*args):
@@ -52,16 +55,24 @@ def norm_appid(value):
 
 
 def make_entry(title, exe, launch_options, start_dir, categories):
-    quoted_exe = '"' + exe + '"'
-    uid = shortcut_appid(quoted_exe, title)
+    real = '"' + exe + '"'
+    if LAUNCH_WRAPPER:
+        # Exe -> wrapper; the real command (+ its args) moves into LaunchOptions
+        # so Steam runs: <wrapper> <real-exe> <args>.
+        exe_field = '"' + LAUNCH_WRAPPER + '"'
+        launch = real + ((" " + launch_options) if launch_options else "")
+    else:
+        exe_field = real
+        launch = launch_options
+    uid = shortcut_appid(exe_field, title)
     return {
         "appid": to_signed32(uid),
         "AppName": title,
-        "Exe": quoted_exe,
+        "Exe": exe_field,
         "StartDir": '"' + start_dir + '"',
         "icon": "",
         "ShortcutPath": "",
-        "LaunchOptions": launch_options,
+        "LaunchOptions": launch,
         "IsHidden": 0,
         "AllowDesktopConfig": 1,
         "AllowOverlay": 1,

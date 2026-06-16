@@ -8,6 +8,17 @@ let
   # for managing artwork from the desktop; this owns the automated import.
   pyEnv = pkgs.python3.withPackages (ps: [ ps.vdf ]);
 
+  # Steam injects its Ubuntu steam-runtime LD_LIBRARY_PATH into every launched
+  # app, which makes Nix-built binaries fail to load libs (e.g. coreutils want
+  # libattr "ATTR_1.3" but get Steam's stale libattr.so.1) - so the launch dies
+  # before the app ever starts. Every generated shortcut runs through this
+  # wrapper, which scrubs the env with shell builtins only (invoking `env` or
+  # any coreutil here would itself fail under the bad path) and then execs.
+  launcher = pkgs.writeShellScriptBin "steam-app-launch" ''
+    unset LD_LIBRARY_PATH LD_PRELOAD
+    exec "$@"
+  '';
+
   reimport = pkgs.writeShellApplication {
     name = "steam-shortcuts-sync";
     runtimeInputs = [
@@ -28,6 +39,8 @@ let
         echo "Steam not signed in yet; skipping sync"
         exit 0
       fi
+      # Stable path (survives rebuilds); the sync re-runs each boot anyway.
+      export LAUNCH_WRAPPER=/run/current-system/sw/bin/steam-app-launch
       exec python3 ${./steam-shortcuts.py}
     '';
   };
@@ -35,6 +48,7 @@ in
 {
   environment.systemPackages = [
     pkgs.steam-rom-manager # desktop GUI, kept for artwork management
+    launcher
     reimport
   ];
 
