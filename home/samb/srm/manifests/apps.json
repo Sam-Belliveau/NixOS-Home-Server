@@ -12,5 +12,19 @@
     "startIn": "/home/steam",
     "launchOptions": "",
     "appendArgsToExecutable": false
+  },
+  {
+    "title": "YouTube",
+    "target": "/run/current-system/sw/bin/google-chrome-stable",
+    "startIn": "/home/steam",
+    "launchOptions": "--kiosk https://www.youtube.com/tv",
+    "appendArgsToExecutable": false
+  },
+  {
+    "title": "Instagram",
+    "target": "/run/current-system/sw/bin/google-chrome-stable",
+    "startIn": "/home/steam",
+    "launchOptions": "--kiosk https://www.instagram.com",
+    "appendArgsToExecutable": false
   }
 ]
