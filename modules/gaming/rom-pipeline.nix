@@ -6,6 +6,7 @@ let
     name = "srm-reimport";
     runtimeInputs = [
       pkgs.steam-rom-manager
+      pkgs.xvfb-run # SRM is Electron; needs a display even for the `add` CLI
       pkgs.procps
       pkgs.coreutils
     ];
@@ -23,8 +24,12 @@ let
       fi
       STEAMGRIDDB_API_KEY="$(cat ${config.sops.secrets."steamgriddb/apikey".path})"
       export STEAMGRIDDB_API_KEY
-      steam-rom-manager enable --all
-      steam-rom-manager add
+      # SRM bundles Electron, so even the `add` CLI boots Chromium and needs a
+      # display. This service runs at boot (Steam closed) *before* any
+      # compositor exists, so without a display Electron segfaults (status 139)
+      # and never writes shortcuts.vdf. Hand it a throwaway virtual X display.
+      xvfb-run -a steam-rom-manager enable --all
+      xvfb-run -a steam-rom-manager add
     '';
   };
 in
