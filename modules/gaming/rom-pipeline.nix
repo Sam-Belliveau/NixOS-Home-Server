@@ -19,17 +19,15 @@ let
     exec "$@"
   '';
 
-  # Launcher for browser "smart-TV" apps. Rendering through gamescope's Wayland
-  # compositor gets Chrome real GPU acceleration (nvidia-drm render node); under
-  # XWayland it can't init GBM and falls back to software -> choppy menus. Vulkan
-  # isn't compatible with wayland-ozone here, so force GL. Per-app args (profile,
-  # user-agent, --kiosk, URL) come from the caller.
+  # Launcher for browser "smart-TV" apps. Must stay on XWayland: gamescope's
+  # Game Mode only reliably displays X11 clients, and a native-Wayland Chrome
+  # launched through Steam never shows its window. --use-gl=egl avoids the GBM
+  # init error ("dri_gbm.so: Permission denied") the default backend hits here.
+  # Per-app args (profile, user-agent, --kiosk, URL) come from the caller.
   chromeKiosk = pkgs.writeShellScriptBin "chrome-kiosk" ''
     unset LD_LIBRARY_PATH LD_PRELOAD
-    export WAYLAND_DISPLAY="''${WAYLAND_DISPLAY:-gamescope-0}"
     exec /run/current-system/sw/bin/google-chrome-stable \
-      --ozone-platform=wayland --enable-features=UseOzonePlatform \
-      --disable-features=Vulkan --no-first-run --no-default-browser-check \
+      --use-gl=egl --no-first-run --no-default-browser-check \
       "$@"
   '';
 
