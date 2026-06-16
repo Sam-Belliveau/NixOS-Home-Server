@@ -19,6 +19,20 @@ let
     exec "$@"
   '';
 
+  # Launcher for browser "smart-TV" apps. Rendering through gamescope's Wayland
+  # compositor gets Chrome real GPU acceleration (nvidia-drm render node); under
+  # XWayland it can't init GBM and falls back to software -> choppy menus. Vulkan
+  # isn't compatible with wayland-ozone here, so force GL. Per-app args (profile,
+  # user-agent, --kiosk, URL) come from the caller.
+  chromeKiosk = pkgs.writeShellScriptBin "chrome-kiosk" ''
+    unset LD_LIBRARY_PATH LD_PRELOAD
+    export WAYLAND_DISPLAY="''${WAYLAND_DISPLAY:-gamescope-0}"
+    exec /run/current-system/sw/bin/google-chrome-stable \
+      --ozone-platform=wayland --enable-features=UseOzonePlatform \
+      --disable-features=Vulkan --no-first-run --no-default-browser-check \
+      "$@"
+  '';
+
   reimport = pkgs.writeShellApplication {
     name = "steam-shortcuts-sync";
     runtimeInputs = [
@@ -49,6 +63,7 @@ in
   environment.systemPackages = [
     pkgs.steam-rom-manager # desktop GUI, kept for artwork management
     launcher
+    chromeKiosk
     reimport
   ];
 
