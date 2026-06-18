@@ -1,11 +1,4 @@
-{ pkgs, inputs, ... }:
-let
-  # Stable nixpkgs, used only for leaf packages that are broken on unstable.
-  pkgsStable = import inputs.nixpkgs-stable {
-    inherit (pkgs.stdenv.hostPlatform) system;
-    config.allowUnfree = true;
-  };
-in
+{ pkgs, ... }:
 {
   # Standalone emulators, launched per-ROM by the Steam import pipeline.
   environment.systemPackages =
@@ -21,9 +14,11 @@ in
       xemu
     ])
     ++ [
-      # rpcs3 fails to compile on the current nixos-unstable snapshot
-      # (2026-06); pull the cached stable build instead. Revert to pkgs.rpcs3
-      # once unstable builds again.
-      pkgsStable.rpcs3
+      # rpcs3's nixpkgs package is broken: it vendors wolfSSL/Fusion as shared
+      # libs but installs none of them, so the binary can't load (and it's
+      # marked unfree, so it's never a cached/tested build). Run the upstream
+      # AppImage in an FHS sandbox instead - see ./rpcs3.nix. (This is the only
+      # user of the nixpkgs-stable input, which is now unused.)
+      (import ./rpcs3.nix { inherit pkgs; })
     ];
 }
