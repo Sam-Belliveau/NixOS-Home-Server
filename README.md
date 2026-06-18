@@ -85,9 +85,13 @@ Pushed changes are picked up by a nightly auto-upgrade. nixpkgs itself is advanc
 
 ## ROMs
 
-Drop a ROM into `/games/roms/<system>/` (e.g. `gamecube`, `ps2`, `n64`). A watcher imports it into Steam with SteamGridDB artwork using the standalone emulators; it appears in Game Mode after the next Steam restart. Parser definitions live in `home/steam/srm/userConfigurations.json`.
+Drop a ROM into `/games/roms/<system>/` (e.g. `gamecube`, `ps2`, `n64`). A watcher imports it into Steam using the standalone emulators; it appears in Game Mode after the next Steam restart. Parser definitions live in `home/samb/srm/userConfigurations.json`.
 
-Desktop apps (Vesktop, Chrome) are surfaced in Game Mode the same way, under an "Apps" category, via `home/steam/srm/manifests/`. The importer also runs once per boot before the session, so after you've signed into Steam once, ROMs and apps populate automatically on the next boot.
+**Archives auto-unpack.** A packed ROM (e.g. a PS3 game shipped as a `.7z`/`.zip`/`.rar`) is extracted in place before import: file-based ROMs land in the system folder, and a PS3 disc tree is kept as a per-game folder so the `${title}/PS3_GAME/USRDIR/EBOOT.BIN` parser matches. The original archive is left alone, with a `.unpacked` marker beside it so it is not re-extracted; delete the archive yourself to reclaim space.
+
+**Artwork is automatic.** A separate pass downloads SteamGridDB art (portrait, capsule, hero, logo) for every shortcut into Steam's `grid/` folder, using the key in the `steamgriddb/apikey` sops secret. It runs after the network is up (so it never delays boot) and skips anything already arted. This covers both ROMs and the app/website shortcuts.
+
+Desktop apps (Vesktop, Chrome) and "smart-TV" web apps (YouTube, Instagram) are surfaced in Game Mode the same way, under an "Apps" category, via `home/samb/srm/manifests/`. The importer also runs once per boot before the session, so after you've signed into Steam once, ROMs and apps populate automatically on the next boot.
 
 ## Recovery (if Game Mode or the display breaks)
 
@@ -103,4 +107,6 @@ Game Mode is fragile (NVIDIA + gamescope), so there are layered fallbacks:
 
 ## Bluetooth and audio
 
-PipeWire handles audio; Bluetooth supports headsets/AirPods/speakers (A2DP + HFP via `MultiProfile`). Classic Bluetooth audio is single-host: to move AirPods to your phone, disconnect them from the box first (Plasma's Bluetooth applet, or `bluetoothctl disconnect`). Don't mark a device "trusted" if you want it to stay easy to steal back.
+PipeWire handles audio; Bluetooth supports headsets/AirPods/speakers (A2DP + HFP via `MultiProfile`). The box is configured to be **assertive** about Bluetooth audio (`modules/desktop/audio.nix`): a connected headset becomes the default output, and PipeWire holds the A2DP link open instead of suspending it when idle. Holding the link open keeps this host the "active" source, so a multipoint headset plays here without first unpairing it from your phone — previously audio "wouldn't play until you disconnected the device from everyone else".
+
+The remaining caveat is the headset's own arbitration: a multipoint device that is *actively* streaming from another source (a phone playing music) may still refuse to switch. To force the move, pause the other source or disconnect there. To hand a headset back to your phone, disconnect it from the box (Plasma's Bluetooth applet, or `bluetoothctl disconnect`).
