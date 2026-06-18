@@ -72,6 +72,11 @@ let
         echo "Steam not signed in yet; skipping artwork"
         exit 0
       fi
+      # MUST match rom-import's LAUNCH_WRAPPER: a shortcut's appid (which names
+      # its art files) is crc32(Exe+name), and the import writes Exe as the
+      # wrapper. Computing appids here without the wrapper would file every
+      # banner under an appid no shortcut has, so none would ever show.
+      export LAUNCH_WRAPPER=/run/current-system/sw/bin/steam-app-launch
       export STEAMGRIDDB_KEY_FILE=/run/secrets/steamgriddb/apikey
       exec python3 ${./steam-shortcuts.py} --artwork
     '';
@@ -114,10 +119,14 @@ let
         ps3game=$(find "$tmp" -maxdepth 3 -iname PS3_GAME -type d -print -quit)
 
         if [ -n "$ps3game" ]; then
-          # PS3 disc -> keep PS3_GAME (and siblings like PS3_DISC.SFB) under a
-          # per-game folder so the '${"$"}{title}/PS3_GAME/USRDIR/EBOOT.BIN'
-          # parser matches, whether or not the archive wrapped it in a folder.
-          dest="$dir/$stem"
+          # PS3 disc -> route it into the ps3/ system folder no matter where the
+          # archive was dropped, since the '${"$"}{title}/PS3_GAME/USRDIR/EBOOT.BIN'
+          # parser only scans ${romRoot}/ps3. (PS3_GAME is an unambiguous marker;
+          # loose ROMs can't be auto-sorted this way because an extension like
+          # .iso is shared across PS2/PSP/Xbox/GameCube/Wii.) Keep PS3_GAME and
+          # its siblings (e.g. PS3_DISC.SFB) together under a per-game folder.
+          dest="${romRoot}/ps3/$stem"
+          mkdir -p "${romRoot}/ps3"
           rm -rf "$dest"
           mkdir -p "$dest"
           find "$(dirname "$ps3game")" -mindepth 1 -maxdepth 1 \

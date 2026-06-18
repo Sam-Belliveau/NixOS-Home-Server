@@ -42,6 +42,11 @@ SIDECAR = os.path.join(
 # steam-runtime LD_LIBRARY_PATH that otherwise kills Nix-built binaries.
 LAUNCH_WRAPPER = os.environ.get("LAUNCH_WRAPPER", "")
 
+# SteamGridDB sits behind Cloudflare, which 403s the default "Python-urllib/x.y"
+# User-Agent. A browser-like UA gets through; without this every art lookup
+# fails with HTTP 403 and no shortcut ever gets a banner.
+USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) nix-steam-shortcuts/1.0"
+
 
 def log(*args):
     print("[steam-shortcuts]", *args, flush=True)
@@ -129,6 +134,17 @@ QUERY_OVERRIDES = {
 }
 
 
+def clean_query(title):
+    """Strip region/language tags so a ROM title matches on SteamGridDB.
+
+    Filenames like "Skate 3 (USA, Asia) (En,Fr,Es)" never autocomplete-match;
+    SRM handles this with fuzzyMatch.removeBrackets, which our generator mirrors
+    here. Drops any (...)/[...]/{...} groups and collapses the leftover spaces.
+    """
+    stripped = re.sub(r"[\(\[\{][^\(\)\[\]\{\}]*[\)\]\}]", " ", title)
+    return re.sub(r"\s+", " ", stripped).strip() or title
+
+
 def entries_from_glob_parser(parser):
     """Return [(vdf_entry, art_query), ...] for a glob (ROM) parser."""
     rom_dir = parser["romDirectory"]
@@ -152,7 +168,8 @@ def entries_from_glob_parser(parser):
             launch = args.replace("${filePath}", path)
             entry = make_entry(title, exe, launch,
                                os.path.dirname(exe), categories)
-            entries.append((entry, QUERY_OVERRIDES.get(title, title)))
+            query = QUERY_OVERRIDES.get(title) or clean_query(title)
+            entries.append((entry, query))
     log(parser.get("configTitle"), "->", len(entries), "roms")
     return entries
 
@@ -258,7 +275,10 @@ def sgdb_get(key, path, params=None):
     url = SGDB_API + path
     if params:
         url += "?" + urllib.parse.urlencode(params)
-    req = urllib.request.Request(url, headers={"Authorization": "Bearer " + key})
+    req = urllib.request.Request(url, headers={
+        "Authorization": "Bearer " + key,
+        "User-Agent": USER_AGENT,
+    })
     with urllib.request.urlopen(req, timeout=20) as resp:
         return json.load(resp)
 
@@ -266,7 +286,19 @@ def sgdb_get(key, path, params=None):
 def sgdb_game_id(key, term):
     data = sgdb_get(key, "/search/autocomplete/" + urllib.parse.quote(term))
     items = data.get("data") or []
-    return items[0]["id"] if items else None
+    if not items:
+        return None
+    # Autocomplete orders by popularity, which can rank a spin-off ahead of the
+    # entry that actually has art (e.g. "YouTube VR" before "YouTube (Website)").
+    # Prefer a candidate whose name equals the query once a trailing
+    # "(Website)"/"(Program)" qualifier and case are ignored; fall back to first.
+    want = term.casefold()
+    for item in items:
+        name = re.sub(r"\s*\((?:website|program)\)\s*$", "",
+                      item.get("name", ""), flags=re.I)
+        if name.casefold() == want:
+            return item["id"]
+    return items[0]["id"]
 
 
 def sgdb_first_url(key, kind, game_id, params=None):
@@ -280,7 +312,7 @@ def sgdb_first_url(key, kind, game_id, params=None):
 
 
 def fetch(url, dest):
-    req = urllib.request.Request(url, headers={"User-Agent": "nix-steam-shortcuts"})
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=30) as resp:
         data = resp.read()
     tmp = dest + ".tmp"
