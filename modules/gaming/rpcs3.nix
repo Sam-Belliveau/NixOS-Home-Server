@@ -74,6 +74,13 @@ pkgs.buildFHSEnv {
     ]);
 
   runScript = pkgs.writeShellScript "rpcs3-run" ''
+    # The Game Mode session exports QT_PLUGIN_PATH (and friends) pointing at the
+    # system NixOS Qt. The AppImage's bundled Qt would then load those
+    # incompatible plugins and qFatal ("Could not load the Qt platform plugin
+    # xcb"), crashing before any window appears - which is exactly why Skate 3
+    # "didn't work". Clear them so it uses its own bundled plugins. (nixpkgs'
+    # own appimage-exec.sh does the same; we bypass it by running AppRun.)
+    unset QT_PLUGIN_PATH QT_QPA_PLATFORM_PLUGIN_PATH QML2_IMPORT_PATH QML_IMPORT_PATH
     # NixOS exposes the Vulkan ICD under /run/opengl-driver.
     export VK_ICD_FILENAMES=$(echo /run/opengl-driver/share/vulkan/icd.d/*.json | tr ' ' ':')
     exec ${appdir}/AppRun "$@"
