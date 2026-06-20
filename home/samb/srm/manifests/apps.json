@@ -15,16 +15,16 @@
   },
   {
     "title": "YouTube",
-    "target": "/run/current-system/sw/bin/chrome-kiosk",
+    "target": "/run/current-system/sw/bin/vacuumtube-kiosk",
     "startIn": "/home/samb",
-    "launchOptions": "--user-data-dir=/home/samb/.local/share/chrome-apps/youtube --user-agent=\"Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36\" --kiosk https://www.youtube.com/tv",
+    "launchOptions": "",
     "appendArgsToExecutable": false
   },
   {
     "title": "Instagram",
-    "target": "/run/current-system/sw/bin/chrome-kiosk",
+    "target": "/run/current-system/sw/bin/firefox-kiosk",
     "startIn": "/home/samb",
-    "launchOptions": "--user-data-dir=/home/samb/.local/share/chrome-apps/instagram --kiosk https://www.instagram.com",
+    "launchOptions": "instagram https://www.instagram.com",
     "appendArgsToExecutable": false
   }
 ]

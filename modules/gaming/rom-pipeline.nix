@@ -24,11 +24,67 @@ let
   # launched through Steam never shows its window. --use-gl=egl avoids the GBM
   # init error ("dri_gbm.so: Permission denied") the default backend hits here.
   # Per-app args (profile, user-agent, --kiosk, URL) come from the caller.
+  # Kept as a fallback; the live kiosks now use firefox-kiosk (below), since
+  # Chrome gets NO hardware video decode on NVIDIA (nvidia-vaapi-driver is
+  # Firefox-only) -- which is why the YouTube kiosk was stuck on software
+  # decode at 30fps.
   chromeKiosk = pkgs.writeShellScriptBin "chrome-kiosk" ''
     unset LD_LIBRARY_PATH LD_PRELOAD
     exec /run/current-system/sw/bin/google-chrome-stable \
       --use-gl=egl --no-first-run --no-default-browser-check \
       "$@"
+  '';
+
+  # Per-profile prefs for the Firefox kiosk. Firefox + nvidia-vaapi-driver is
+  # the *only* documented-working HW video decode path on NVIDIA (the driver
+  # explicitly refuses Chrome), and our nvidia.nix already ships the matching
+  # env (LIBVA_DRIVER_NAME=nvidia, NVD_BACKEND=direct).
+  firefoxKioskPrefs = pkgs.writeText "firefox-kiosk-user.js" ''
+    // --- NVIDIA VA-API hardware video decode (nvidia-vaapi-driver) ---
+    user_pref("media.ffmpeg.vaapi.enabled", true);
+    user_pref("media.rdd-ffmpeg.enabled", true);
+    user_pref("media.hardware-video-decoding.force-enabled", true); // FF137+
+    user_pref("gfx.x11-egl.force-enabled", true);   // VA-API needs EGL on XWayland
+    user_pref("widget.dmabuf.force-enabled", true);
+    // The RTX 2070 SUPER (Turing) has no AV1 NVDEC, so AV1 would decode on the
+    // CPU. Disabling it makes YouTube fall back to VP9, which Turing decodes in
+    // hardware. Revisit if this box ever gets an Ampere+ GPU.
+    user_pref("media.av1.enabled", false);
+
+    // --- Kiosk hygiene: no prompts, updates, telemetry or crash-restore ---
+    user_pref("browser.shell.checkDefaultBrowser", false);
+    user_pref("browser.aboutConfig.showWarning", false);
+    user_pref("app.update.auto", false);
+    user_pref("app.update.enabled", false);
+    user_pref("datareporting.policy.dataSubmissionEnabled", false);
+    user_pref("datareporting.healthreport.uploadEnabled", false);
+    user_pref("browser.sessionstore.resume_from_crash", false);
+    user_pref("browser.startup.homepage_override.mstone", "ignore");
+    user_pref("browser.tabs.warnOnClose", false);
+    user_pref("full-screen-api.warning.timeout", 0);
+  '';
+
+  # Launcher for browser "smart-TV" apps, Firefox edition. Same XWayland
+  # constraint as chrome-kiosk (forced via MOZ_ENABLE_WAYLAND=0). Firefox has no
+  # --user-agent flag, so the UA override is written into a per-app profile's
+  # user.js. Usage: firefox-kiosk <profile-name> <url> [user-agent]
+  firefoxKiosk = pkgs.writeShellScriptBin "firefox-kiosk" ''
+    unset LD_LIBRARY_PATH LD_PRELOAD
+    profile="$1"; url="$2"; ua="''${3:-}"
+    dir="$HOME/.local/share/firefox-kiosk/$profile"
+    mkdir -p "$dir"
+    # Rewrite prefs every launch so edits to firefoxKioskPrefs always take hold.
+    install -m644 ${firefoxKioskPrefs} "$dir/user.js"
+    if [ -n "$ua" ]; then
+      printf 'user_pref("general.useragent.override", "%s");\n' "$ua" >> "$dir/user.js"
+    fi
+    # XWayland (gamescope shows X11 reliably) + RDD sandbox off so the decoder
+    # process can reach the NVIDIA libs.
+    export MOZ_ENABLE_WAYLAND=0
+    export MOZ_DISABLE_RDD_SANDBOX=1
+    export LIBVA_DRIVER_NAME=nvidia NVD_BACKEND=direct
+    exec /run/current-system/sw/bin/firefox \
+      --profile "$dir" --no-remote --kiosk "$url"
   '';
 
   reimport = pkgs.writeShellApplication {
@@ -156,6 +212,7 @@ in
     pkgs.steam-rom-manager # desktop GUI, kept for manual artwork tweaks
     launcher
     chromeKiosk
+    firefoxKiosk
     reimport
     artworkSync
     romExtract
