@@ -9,5 +9,6 @@
     ./syncthing.nix
     ./adguardhome.nix
     ./homepage.nix
+    ./capturegraph.nix
   ];
 }

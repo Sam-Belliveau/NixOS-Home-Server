@@ -28,6 +28,7 @@
     syncthing.enable = true;
     adguardhome.enable = true;
     homepage.enable = true;
+    capturegraph.enable = true;
   };
 
   # home-manager: both login users
