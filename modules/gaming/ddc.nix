@@ -12,8 +12,8 @@ let
         bus=$(basename "$adapter")
         num=''${bus#i2c-}
         [ -d "$adapter/$num-0037" ] && continue
-        drv=$(readlink -f "$adapter/device/driver" 2>/dev/null || true)
-        case "$drv" in *nvidia*) ;; *) continue ;; esac
+        name=$(cat "$adapter/name" 2>/dev/null || true)
+        case "$name" in *NVIDIA*) ;; *) continue ;; esac
         echo "ddcci 0x37" > "$adapter/new_device" 2>/dev/null || true
       done
       sleep 2
