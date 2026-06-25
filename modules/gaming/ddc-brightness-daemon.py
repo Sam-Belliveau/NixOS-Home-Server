@@ -40,11 +40,15 @@ async def watch(path, active):
         if ecodes.BTN_MODE not in dev.capabilities().get(ecodes.EV_KEY, []):
             return
         active.add(path)
+        print(f"watching {dev.name} ({path})", flush=True)
         guide = False
         async for ev in dev.async_read_loop():
             if ev.type == ecodes.EV_KEY and ev.code == ecodes.BTN_MODE:
                 guide = ev.value == 1
-            elif guide and ev.type == ecodes.EV_ABS and ev.code == ecodes.ABS_HAT0Y:
+                print(f"BTN_MODE={ev.value} on {dev.name}", flush=True)
+            elif ev.type == ecodes.EV_ABS and ev.code == ecodes.ABS_HAT0Y:
+                print(f"HAT0Y={ev.value} guide={guide} on {dev.name}", flush=True)
+            if guide and ev.type == ecodes.EV_ABS and ev.code == ecodes.ABS_HAT0Y:
                 if ev.value == -1:
                     adjust(STEP)
                 elif ev.value == 1:
