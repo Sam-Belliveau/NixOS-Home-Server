@@ -11,6 +11,7 @@
       "video"
       "render"
       "input" # controllers in Game Mode (previously via the steam user)
+      "i2c" # DDC monitor brightness control via ddcutil
     ];
     shell = pkgs.zsh;
     hashedPasswordFile = config.sops.secrets."samb/hashedPassword".path;
