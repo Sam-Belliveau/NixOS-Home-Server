@@ -16,13 +16,16 @@ def find_backlight():
 
 def adjust(delta):
     bl = find_backlight()
+    print(f"adjust({delta}) bl={bl}", flush=True)
     if not bl:
         return
     try:
         cur = int(open(f"{bl}/brightness").read())
         mx  = int(open(f"{bl}/max_brightness").read())
         nv  = max(0, min(mx, cur + delta))
+        print(f"adjust: cur={cur} mx={mx} nv={nv}", flush=True)
         open(f"{bl}/brightness", "w").write(str(nv))
+        print("adjust: write ok", flush=True)
     except PermissionError:
         if shutil.which("ddcutil"):
             cur2 = int(open(f"{bl}/brightness").read()) if bl else 50
@@ -30,8 +33,8 @@ def adjust(delta):
                 ["ddcutil", "setvcp", "0x10", str(max(0, min(100, cur2 + delta)))],
                 capture_output=True,
             )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"adjust: error {e!r}", flush=True)
 
 
 async def watch(path, active):
