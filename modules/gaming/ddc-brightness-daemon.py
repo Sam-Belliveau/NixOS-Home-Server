@@ -26,7 +26,7 @@ async def hat_accelerate(direction):
     cur = int(open(f"{bl}/brightness").read())
     while True:
         elapsed = time.monotonic() - start
-        delta = int(max(10, mx * (elapsed / 3) ** 2))
+        delta = int(max(10, mx * (elapsed / 1) ** 2))
         nv = max(0, min(mx, cur + direction * delta))
         print(f"adjust: cur={cur} mx={mx} nv={nv}", flush=True)
         open(f"{bl}/brightness", "w").write(str(nv))
