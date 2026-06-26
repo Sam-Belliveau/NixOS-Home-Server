@@ -32,6 +32,10 @@
       fontconfig
       freetype
       ffmpeg
+      # Python ML wheels (torch/opencv/rawpy) want these: libcrypt.so.1 from the
+      # legacy libxcrypt, plus glibc's own lib dir for the odd direct dlopen.
+      glibc
+      libxcrypt-legacy
     ];
   };
 }

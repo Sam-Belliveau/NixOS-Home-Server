@@ -4,5 +4,6 @@
     ./cli.nix
     ./toolchains.nix
     ./python.nix
+    ./reconstruction.nix
   ];
 }
