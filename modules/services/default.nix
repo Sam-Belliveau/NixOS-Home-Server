@@ -10,6 +10,5 @@
     ./adguardhome.nix
     ./homepage.nix
     ./capturegraph.nix
-    ./courtyard-worker.nix
   ];
 }
