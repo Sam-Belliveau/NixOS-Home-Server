@@ -9,9 +9,9 @@ let
   # PyTorch only errors on a CUDA *major* mismatch, it warns on a minor one.
   cuda = pkgs.cudaPackages_12_6;
 
-  # gcc12 as nvcc's host compiler: NixOS' default gcc is too new for nvcc, and
-  # CUDA 12.6 only certifies host GCC up to 13 — 12 is the safe choice.
-  hostcc = pkgs.gcc12;
+  # nvcc's host compiler: NixOS' default gcc is too new for nvcc, so use the exact
+  # gcc cudaPackages_12_6 certifies (gcc12 has been removed from nixpkgs).
+  hostcc = cuda.backendStdenv.cc;
 
   # Libraries the pip-installed wheels (torch, opencv, rawpy, …) dlopen at run
   # time. Foreign wheels under a uv-managed standalone Python resolve these via

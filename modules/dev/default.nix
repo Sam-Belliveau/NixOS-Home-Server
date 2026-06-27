@@ -5,5 +5,6 @@
     ./toolchains.nix
     ./python.nix
     ./reconstruction.nix
+    ./cuda.nix
   ];
 }
