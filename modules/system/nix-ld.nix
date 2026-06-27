@@ -1,9 +1,19 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
+let
+  # Expose only the NVIDIA driver's libcuda (the userspace driver stub) to nix-ld,
+  # not the whole driver tree, so pip CUDA wheels (torch) resolve libcuda.so.1
+  # without shadowing the system libGL for other foreign binaries. The driver ships
+  # libcuda; everything else CUDA is bundled in the torch wheel.
+  libcuda = pkgs.runCommand "nix-ld-libcuda" { } ''
+    mkdir -p $out/lib
+    ln -s ${config.hardware.nvidia.package}/lib/libcuda.so* $out/lib/
+  '';
+in
 {
   # Run unpatched dynamic binaries: VS Code Remote server, pip/uv wheels, conda.
   programs.nix-ld = {
     enable = true;
-    libraries = with pkgs; [
+    libraries = [ libcuda ] ++ (with pkgs; [
       stdenv.cc.cc.lib
       zlib
       zstd
@@ -36,6 +46,6 @@
       # legacy libxcrypt, plus glibc's own lib dir for the odd direct dlopen.
       glibc
       libxcrypt-legacy
-    ];
+    ]);
   };
 }
