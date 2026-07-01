@@ -23,14 +23,14 @@ The whole machine is declared here. There is no manual post-install fiddling bey
 
 | | |
 |---|---|
-| `flake.nix` | inputs (nixpkgs, home-manager, disko, sops-nix) and the `samb-tower` system |
+| `flake.nix` | inputs (nixpkgs, home-manager, disko, sops-nix, Jovian) and the `samb-tower` system |
 | `hosts/samb-tower/` | host config, hardware facts, disko disk layout |
 | `modules/system/` | nix settings, boot, swap, nix-ld, auto-upgrade, secrets |
-| `modules/desktop/` | Plasma 6, fonts |
+| `modules/desktop/` | Plasma 6, fonts, PipeWire/Bluetooth audio, desktop apps |
 | `modules/gaming/` | NVIDIA, Game Mode session, controllers, Sunshine, emulators, ROM pipeline |
 | `modules/dev/` | compilers, language runtimes, Python tooling |
 | `modules/services/` | sshd, tailscale, cloudflared, Home Assistant, Jellyfin, Syncthing, AdGuard, Homepage |
-| `modules/users/` | the `steam` and `samb` accounts and the shared `gamelib` group |
+| `modules/users/` | the `samb` account and the shared `gamelib` group |
 | `home/` | per-user home-manager (shell, prompt, git, VS Code) |
 
 Disks: the 1 TB holds `/` and `/nix` on btrfs plus a swapfile; the 4 TB holds `/home`, `/games`, and `/srv` on btrfs. zram is the primary swap. Services keep their data under `/srv`; the Steam library and ROMs live under `/games`.
@@ -97,7 +97,7 @@ Desktop apps (Vesktop, Chrome) and "smart-TV" web apps (YouTube, Instagram) are 
 
 Game Mode is fragile (NVIDIA + gamescope), so there are layered fallbacks:
 
-1. **Plasma desktop.** If the Steam session crashes, SDDM returns to its login screen; pick the KDE Plasma session for a full working desktop. From Steam's power menu, "Switch to Desktop" does the same.
+1. **Plasma desktop.** From Steam's power menu, "Switch to Desktop" drops to a full KDE Plasma session (Jovian's `steamos-session-select`); "Return to Gaming Mode" switches back. If the Steam session crashes, the session manager restarts it.
 2. **TTY console.** `Ctrl`+`Alt`+`F3` gives a text login as `samb` (password from sops; SSH key still works for `scp`/repair).
 3. **SSH / Tailscale.** Always on, key-only. The host SSH identity is persisted on the install USB, so it is stable across reinstalls. From a laptop: `ssh samb@samb-tower`, then `sudo systemctl restart display-manager` to bounce the session, or `sudo nixos-rebuild switch --rollback`.
 4. **Moonlight.** Sunshine streams the desktop to another device if the local display itself is the problem.

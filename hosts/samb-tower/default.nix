@@ -31,7 +31,7 @@
     capturegraph.enable = true;
   };
 
-  # home-manager: both login users
+  # home-manager for samb
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;

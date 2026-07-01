@@ -17,7 +17,8 @@ def find_backlight():
 
 
 async def hat_accelerate(direction):
-    """Adjust brightness repeatedly while DPad is held, accelerating over 3s."""
+    """Adjust brightness repeatedly while DPad is held, ramping quadratically
+    from the starting value to the full range over ~1s."""
     start = time.monotonic()
     bl = find_backlight()
     if not bl:

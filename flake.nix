@@ -7,11 +7,6 @@
     # rev, so "rolling" only moves when you `nix flake update`.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # Stable, only to cherry-pick leaf packages that are temporarily broken on
-    # unstable (currently rpcs3 - see modules/gaming/emulators.nix). Not a
-    # second system channel; just a source for individual cached binaries.
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
-
     home-manager = {
       # master tracks nixpkgs unstable (release-* tracks stable).
       url = "github:nix-community/home-manager/master";

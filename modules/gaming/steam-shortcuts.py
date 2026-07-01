@@ -249,14 +249,20 @@ def write_shortcuts(entries):
         combined = preserved + entries
         new_map = {str(i): v for i, v in enumerate(combined)}
         os.makedirs(config_dir, exist_ok=True)
-        with open(path, "wb") as handle:
+        # Write-then-rename: this runs at boot, and a crash mid-write must not
+        # leave Steam a truncated shortcuts.vdf.
+        tmp = path + ".tmp"
+        with open(tmp, "wb") as handle:
             vdf.binary_dump({"shortcuts": new_map}, handle)
+        os.replace(tmp, path)
         log("wrote", len(entries), "managed +",
             len(preserved), "preserved ->", path)
 
     os.makedirs(os.path.dirname(SIDECAR), exist_ok=True)
-    with open(SIDECAR, "w") as handle:
+    tmp = SIDECAR + ".tmp"
+    with open(tmp, "w") as handle:
         json.dump(sorted(ours), handle)
+    os.replace(tmp, SIDECAR)
     return 0
 
 
