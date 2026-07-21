@@ -12,9 +12,12 @@ in
     };
 
     # render/video give ffmpeg NVENC access; enable it in the Jellyfin dashboard.
+    # media grants read access to /srv/media (populated by qbittorrent.nix).
     users.users.jellyfin.extraGroups = [
       "render"
       "video"
+      "media"
     ];
+    users.groups.media = { };
   };
 }

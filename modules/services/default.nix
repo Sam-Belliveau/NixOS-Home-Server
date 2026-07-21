@@ -6,6 +6,7 @@
     ./cloudflared.nix
     ./home-assistant.nix
     ./jellyfin.nix
+    ./qbittorrent.nix
     ./syncthing.nix
     ./adguardhome.nix
     ./homepage.nix

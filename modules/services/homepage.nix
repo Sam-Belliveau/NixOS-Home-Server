@@ -29,6 +29,11 @@ in
                 href = "http://samb-tower:8096";
               };
             }
+            {
+              "qBittorrent" = {
+                href = "http://samb-tower:8080";
+              };
+            }
           ];
         }
         {

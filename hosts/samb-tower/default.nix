@@ -25,6 +25,7 @@
     homeAssistant.enable = true;
     cloudflared.enable = true;
     jellyfin.enable = true;
+    qbittorrent.enable = true;
     syncthing.enable = true;
     adguardhome.enable = true;
     homepage.enable = true;
