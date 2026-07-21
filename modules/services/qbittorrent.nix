@@ -34,7 +34,7 @@ in
           Username = "samb";
           # PBKDF2-HMAC-SHA512. Regenerate (and update this) with:
           #   python3 -c 'import hashlib,os,base64,getpass; s=os.urandom(16); p=getpass.getpass().encode(); print("@ByteArray("+base64.b64encode(s).decode()+":"+base64.b64encode(hashlib.pbkdf2_hmac("sha512",p,s,100000,64)).decode()+")")'
-          Password_PBKDF2 = ''"@ByteArray(zzEXF/E7QxlUrkxfWYDfVA==:15ejwaYLhZ7s47whw0RiF+KzPUNZGurk5UNVJ2ZFptn/wLhhV0hGT9CSbYs3wefNyJPyuKpZ85TmD3MVv5x2Yg==)"'';
+          Password_PBKDF2 = ''"@ByteArray(j4b10Vrr1lHd21YT3K/ZjA==:1c9CyIByPBFbOkgd2evzV1zfqdk34E5YoqYHATJ2veN5P4ZgEYsnQu4CiwKGjBXRifkTCo8rWhI0NhYQjOFMMQ==)"'';
           LocalHostAuth = false;
         };
       };
