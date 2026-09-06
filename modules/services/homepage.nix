@@ -45,15 +45,6 @@ in
             }
           ];
         }
-        {
-          "Network" = [
-            {
-              "AdGuard Home" = {
-                href = "http://samb-tower:3000";
-              };
-            }
-          ];
-        }
       ];
 
       widgets = [

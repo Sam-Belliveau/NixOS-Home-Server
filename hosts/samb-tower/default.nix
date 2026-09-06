@@ -20,14 +20,27 @@
 
   networking.hostName = "samb-tower";
 
+  # Static resolvers, always present in /etc/resolv.conf ahead of whatever
+  # DHCP hands NetworkManager. DNS on this box must not depend on any one
+  # daemon or lease being healthy (see modules/services/tailscale.nix).
+  networking.nameservers = [
+    "8.8.8.8"
+    "8.8.4.4"
+    "1.1.1.1"
+    "1.0.0.1"
+  ];
+
   # Service manifest - one switch per service
   myServices = {
-    homeAssistant.enable = true;
+    # 2026-09-06: Home Assistant (+ matter-server), Jellyfin and qBittorrent
+    # switched off to keep the box lean and reboots fast. State is untouched
+    # (/srv/home-assistant, /var/lib/jellyfin, qbittorrent profile); flip back
+    # to true to bring one back.
+    homeAssistant.enable = false;
     cloudflared.enable = true;
-    jellyfin.enable = true;
-    qbittorrent.enable = true;
+    jellyfin.enable = false;
+    qbittorrent.enable = false;
     syncthing.enable = true;
-    adguardhome.enable = true;
     homepage.enable = true;
     capturegraph.enable = true;
   };

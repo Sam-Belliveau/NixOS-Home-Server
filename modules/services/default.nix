@@ -8,7 +8,6 @@
     ./jellyfin.nix
     ./qbittorrent.nix
     ./syncthing.nix
-    ./adguardhome.nix
     ./homepage.nix
     ./capturegraph.nix
   ];

@@ -42,6 +42,20 @@ in
   hardware.steam-hardware.enable = true; # udev + uinput
   hardware.xpadneo.enable = true; # Xbox over Bluetooth
 
+  # Xbox Wireless Adapter (USB 045e:02e6, the "XBOX ACC" dongle). Its radio is
+  # a MediaTek MT7612U, so without a driver the kernel's generic mt76x2u WiFi
+  # driver grabs it and exposes a useless second WiFi card (wlp0s20f0u7) that
+  # no controller can pair through. Worse, that driver wedges the device
+  # ("vendor request ... failed:-110" every 3s) and on shutdown left
+  # cloudflared/home-assistant/avahi/logrotate stuck in the kernel past
+  # SIGKILL, turning every reboot into a 3-minute wait. xone is the real
+  # driver (dlundqvist fork, needs kernel >= 6.5); the module also blacklists
+  # mt76x2u + xpad and pulls in the proprietary dongle firmware (unfree).
+  # Pairing: hold the dongle's button until it blinks, then the pad's sync
+  # button. The dongle must be re-plugged (or the box rebooted) after the
+  # first switch so the new driver binds.
+  hardware.xone.enable = true;
+
   environment.systemPackages = [ bt-pair ];
 
   hardware.bluetooth = {
