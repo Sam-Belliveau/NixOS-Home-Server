@@ -2,6 +2,7 @@
 {
   imports = [
     ./cli.nix
+    ./documents.nix
     ./toolchains.nix
     ./python.nix
     ./reconstruction.nix

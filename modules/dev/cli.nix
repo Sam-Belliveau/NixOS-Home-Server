@@ -27,6 +27,14 @@
     curl
     wget
     rsync
+    # Misc utilities
+    bc
+    zip
+    unzip
+    p7zip
+    sqlite
+    usbutils
+    pciutils
   ];
 
   programs.direnv = {
