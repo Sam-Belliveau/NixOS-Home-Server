@@ -43,6 +43,7 @@
     syncthing.enable = true;
     homepage.enable = true;
     capturegraph.enable = true;
+    claudeRemoteControl.enable = true;
   };
 
   # home-manager for samb
