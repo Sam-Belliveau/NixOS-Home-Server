@@ -23,8 +23,11 @@
   # is the upstream default and cheap.
   networking.networkmanager.logLevel = "INFO";
 
-  # Keep the journal from silently filling the disk.
-  services.journald.extraConfig = ''
+  # Keep the journal from silently filling the disk. A drop-in rather than
+  # services.journald.extraConfig (removed in newer nixpkgs) or
+  # services.journald.settings (absent in the pinned one), so both evaluate.
+  environment.etc."systemd/journald.conf.d/50-max-use.conf".text = ''
+    [Journal]
     SystemMaxUse=2G
   '';
 }

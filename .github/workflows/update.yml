@@ -7,15 +7,20 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
-  update-nixpkgs:
+  # claude-code only touches its own nixpkgs-claude input (an overlay), so its
+  # bumps go straight to main.
+  update-claude-code:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref_name }}
       - uses: DeterminateSystems/nix-installer-action@main
-      - name: bump nixpkgs
-        run: nix flake update nixpkgs
+      - name: bump claude-code
+        run: nix flake update nixpkgs-claude
       - name: evaluate before committing
         run: nix flake check --no-build
         env:
@@ -25,5 +30,46 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add flake.lock
-          git diff --cached --quiet || git commit -m "flake.lock: bump nixpkgs"
-          git push
+          git diff --cached --quiet || git commit -m "flake.lock: bump claude-code"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+  # The main nixpkgs pin moves gamescope and the NVIDIA driver, which the 4K60
+  # Game Mode setup is sensitive to, so this bump only goes up as a branch/PR
+  # for review. Every input that follows nixpkgs has to move with it, or old
+  # pins stop evaluating against the new module system / package set.
+  update-nixpkgs:
+    needs: update-claude-code
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: update/nixpkgs
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: bump nixpkgs + followers
+        run: nix flake update nixpkgs home-manager disko sops-nix jovian
+      - name: evaluate before committing
+        run: nix flake check --no-build
+        env:
+          NIXPKGS_ALLOW_UNFREE: "1"
+      - name: push branch + PR
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flake.lock
+          if git diff --cached --quiet; then
+            echo "nixpkgs already up to date"
+            exit 0
+          fi
+          git commit -m "flake.lock: bump nixpkgs + followers"
+          git push --force origin "HEAD:refs/heads/$BRANCH"
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number -q '.[]')" ]; then
+            echo "PR for $BRANCH already open; branch refreshed"
+          elif ! gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
+              --title "flake.lock: bump nixpkgs + followers" \
+              --body "Automated nixpkgs bump (evaluates with \`nix flake check --no-build\`). Moves gamescope + the NVIDIA driver: test 4K60 Game Mode before merging."; then
+            echo "::warning::Could not open a PR (enable 'Allow GitHub Actions to create and approve pull requests'). Review: ${{ github.server_url }}/${{ github.repository }}/compare/${{ github.ref_name }}...$BRANCH"
+          fi

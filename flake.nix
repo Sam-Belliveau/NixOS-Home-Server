@@ -7,6 +7,13 @@
     # rev, so "rolling" only moves when you `nix flake update`.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    # claude-code only (overlaid in modules/system/nix-settings.nix). It ships
+    # new releases — and with them new models — far faster than the main
+    # nixpkgs pin moves, and bumping that pin drags gamescope/NVIDIA along with
+    # it. master gets claude-code updates first. Bump on its own with
+    # `nix flake update nixpkgs-claude`.
+    nixpkgs-claude.url = "github:NixOS/nixpkgs/master";
+
     home-manager = {
       # master tracks nixpkgs unstable (release-* tracks stable).
       url = "github:nix-community/home-manager/master";

@@ -100,12 +100,29 @@
         "type": "github"
       }
     },
+    "nixpkgs-claude": {
+      "locked": {
+        "lastModified": 1792170647,
+        "narHash": "sha256-i3wFWRKb6f+4Zi/7D3Bz7Yx3fN+Wxhov5rcuiuo7zTA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "76bd0dd48c283def8cee73bbcddfef2d48e59035",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "master",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
         "home-manager": "home-manager",
         "jovian": "jovian",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-claude": "nixpkgs-claude",
         "sops-nix": "sops-nix"
       }
     },

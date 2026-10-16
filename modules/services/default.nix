@@ -10,5 +10,6 @@
     ./syncthing.nix
     ./homepage.nix
     ./capturegraph.nix
+    ./claude-remote-control.nix
   ];
 }
