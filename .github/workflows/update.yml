@@ -14,8 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: DeterminateSystems/nix-installer-action@main
-      - name: bump nixpkgs
-        run: nix flake update nixpkgs
+      - name: bump nixpkgs + claude-code
+        run: nix flake update nixpkgs nixpkgs-claude
       - name: evaluate before committing
         run: nix flake check --no-build
         env:
@@ -25,5 +25,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add flake.lock
-          git diff --cached --quiet || git commit -m "flake.lock: bump nixpkgs"
+          git diff --cached --quiet || git commit -m "flake.lock: bump nixpkgs + claude-code"
           git push

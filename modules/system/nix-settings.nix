@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   nixpkgs.config.allowUnfree = true;
 
@@ -19,6 +19,19 @@
     dates = "weekly";
     options = "--delete-older-than 30d";
   };
+
+  # claude-code comes from its own nixpkgs input (see flake.nix) so it can be
+  # bumped without moving the rest of the system. Overlaid so every user of
+  # pkgs.claude-code (incl. the Remote Control units) gets the same build.
+  nixpkgs.overlays = [
+    (final: prev: {
+      claude-code =
+        (import inputs.nixpkgs-claude {
+          system = prev.stdenv.hostPlatform.system;
+          config.allowUnfree = true;
+        }).claude-code;
+    })
+  ];
 
   environment.systemPackages = [ pkgs.claude-code ];
 
