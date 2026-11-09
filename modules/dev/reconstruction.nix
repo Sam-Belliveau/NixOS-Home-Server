@@ -5,13 +5,16 @@
   # engine; anything doing pose estimation or sparse reconstruction can shell out
   # to `colmap` without first entering a devShell.
   #
-  # CPU build on purpose: it's in the binary cache (instant, and can't fail a
-  # nixos-rebuild). The CUDA-accelerated COLMAP plus the full GPU Gaussian-splat
-  # Python toolchain (nvcc, cudnn, nerfstudio/gsplat) live in the `gaussian-splat`
-  # devShell — `nix develop .#gaussian-splat` — so none of that heavy CUDA closure
-  # is ever pulled into the system.
+  # CUDA build, for GPU SIFT extraction/matching and GPU bundle adjustment. CUDA
+  # is unfree, so no binary cache holds it: every nixpkgs bump recompiles COLMAP
+  # during the rebuild. Compiling for the RTX 2070 SUPER's architecture alone
+  # (sm_75) and skipping the test suite keeps that compile short.
   environment.systemPackages = [
-    pkgs.colmap
+    (pkgs.colmap.override {
+      cudaSupport = true;
+      cudaCapabilities = [ "7.5" ];
+      enableTests = false;
+    })
     # pkgs.glomap   # faster global SfM — uncomment to also expose it
   ];
 }
